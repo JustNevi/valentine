@@ -30,6 +30,8 @@ function Engine({ endCalculate }: Props): Engine {
   let particles_photons: Particle[][];
   let static_particles_heart: Particle[][];
   let particles_heart: Particle[][];
+  let static_particles_falling: Particle[][];
+  let particles_falling: Particle[][];
 
   let mouse_x: number = 0;
   let mouse_y: number = 0;
@@ -198,9 +200,34 @@ function Engine({ endCalculate }: Props): Engine {
     );
   };
 
+  const initFallingParticles = () => {
+    static_particles_falling = [];
+    particles_falling = [];
+
+    const size = 50;
+
+    for (let i = 0; i < size; i++) {
+      let heart_particle =
+        static_particles_heart[
+          getRandomInt(static_particles_heart.length - 1)
+        ][0];
+      heart_particle.y = window.innerWidth;
+      static_particles_falling.push([heart_particle]);
+    }
+
+    for (let i = 0; i < size; i++) {
+      let heart_particle =
+        static_particles_heart[
+          getRandomInt(static_particles_heart.length - 1)
+        ][0];
+      particles_falling.push([heart_particle]);
+    }
+  };
+
   const start = () => {
     initHeartParticles();
     initPhotonParticles();
+    initFallingParticles();
 
     endCalculate(
       particlesToArray(particles_heart),
@@ -252,12 +279,63 @@ function Engine({ endCalculate }: Props): Engine {
     particles_photons = moveParticles(moved_particles);
   };
 
+  const processFalling = () => {
+    let moved_particles: Particle[][] = new Array(particles_falling.length)
+      .fill(null)
+      .map(() => []);
+
+    for (let i = 0; i < static_particles_falling.length; i++) {
+      let static_array = static_particles_falling[i];
+      let movable_array = particles_falling[i];
+
+      movable_array = Repulsion({
+        static_particle: particleToChargedParticle(static_array[0], -0.0002),
+        particles: movable_array.map((p) => particleToChargedParticle(p)),
+      });
+
+      moved_particles[i] = movable_array;
+    }
+
+    particles_falling = moveParticles(moved_particles);
+
+    particles_falling.forEach((arr, index) => {
+      if (arr[0].y > innerHeight) {
+        static_particles_falling = static_particles_falling.filter(
+          (_, ind) => ind != index
+        );
+        particles_falling = particles_falling.filter((_, ind) => ind != index);
+      }
+    });
+
+    for (let i = 0; i < 50 - static_particles_falling.length; i++) {
+      let heart_particle = {
+        ...static_particles_heart[
+          getRandomInt(static_particles_heart.length - 1)
+        ][0],
+      };
+      heart_particle.y = window.innerWidth;
+      static_particles_falling.push([heart_particle]);
+    }
+
+    for (let i = 0; i < 50 - particles_falling.length; i++) {
+      let heart_particle = {
+        ...static_particles_heart[
+          getRandomInt(static_particles_heart.length - 1)
+        ][0],
+      };
+      particles_falling.push([heart_particle]);
+    }
+  };
+
   const run = () => {
     processHeart();
     processPhotons();
+    processFalling();
 
     endCalculate(
-      particlesToArray(particles_heart),
+      particlesToArray(particles_heart).concat(
+        particlesToArray(particles_falling)
+      ),
       particlesToArray(particles_photons, true),
       [],
       {
