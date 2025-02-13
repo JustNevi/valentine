@@ -6,10 +6,10 @@ interface Props {
   k?: number;
 }
 
-function Magnetic({
+function Repulsion({
   static_particle,
   particles,
-  k = -30,
+  k = -1 / 1000,
 }: Props): ChargedParticle[] {
   const moved_particles: ChargedParticle[] = [...particles];
 
@@ -21,7 +21,7 @@ function Magnetic({
     q1: number,
     q2: number,
     r: number
-  ) => (k * q1 * q2 * (x2 - x1)) / (r / 2) ** 2;
+  ) => k * q1 * q2 * (x2 - x1) * r;
 
   const sp = static_particle;
 
@@ -50,4 +50,4 @@ function Magnetic({
   return moved_particles;
 }
 
-export default Magnetic;
+export default Repulsion;

@@ -54,7 +54,7 @@ function Renderer(): Renderer {
     shapes = shapes.concat(particlesToCircles(particles));
 
     if (help_particles) {
-      shapes = shapes.concat(particlesToCircles(help_particles, "blue"));
+      shapes = shapes.concat(particlesToCircles(help_particles, "blue", 1));
     }
   };
 
