@@ -7,7 +7,12 @@ import Rectangle from "./Shapes/Basic/Rectangle";
 
 import ShapesDrawer from "./Shapes/ShapesDrawer";
 
-function Renderer(): (context: CanvasRenderingContext2D) => void {
+export interface Renderer {
+  draw: (context: CanvasRenderingContext2D) => void;
+  onClickHandler: (event: MouseEvent) => void;
+}
+
+function Renderer(): Renderer {
   let shapes: Shape[] = [
     Circle({ circle: { x: 0, y: 0, r: 5, color: "red" } }),
     Circle({ circle: { x: 20, y: 20, r: 10, color: "green" } }),
@@ -47,7 +52,9 @@ function Renderer(): (context: CanvasRenderingContext2D) => void {
     engine.run();
   };
 
-  return draw;
+  const onClickHandler = engine.onClickHandler;
+
+  return { draw, onClickHandler };
 }
 
 export default Renderer;

@@ -2,7 +2,10 @@ import Canvas from "./Canvas/Canvas";
 import Renderer from "./Renderer";
 
 function ValentineCanvas() {
-  return <Canvas draw={Renderer()}></Canvas>;
+  const renderer = Renderer();
+  return (
+    <Canvas draw={renderer.draw} onClick={renderer.onClickHandler}></Canvas>
+  );
 }
 
 export default ValentineCanvas;

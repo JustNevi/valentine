@@ -2,11 +2,26 @@ import { useEffect, useRef, useState } from "react";
 
 interface Props {
   draw: (context: CanvasRenderingContext2D) => void;
+  onClick?: (event: MouseEvent) => void;
 }
 
-function useCanvas({ draw }: Props) {
+function useCanvas({ draw, onClick }: Props) {
   const ref = useRef<HTMLCanvasElement | null>(null);
   const [context, setContext] = useState<CanvasRenderingContext2D | null>(null);
+
+  const setHandlers = (context: CanvasRenderingContext2D) => {
+    const resizeCanvas = () => {
+      context.canvas.width = window.innerWidth;
+      context.canvas.height = window.innerHeight;
+    };
+
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
+
+    if (onClick) {
+      window.addEventListener("click", onClick);
+    }
+  };
 
   useEffect(() => {
     if (ref.current) {
@@ -20,13 +35,7 @@ function useCanvas({ draw }: Props) {
     let animationFrameId = 0;
 
     if (context) {
-      const resizeCanvas = () => {
-        context.canvas.width = window.innerWidth;
-        context.canvas.height = window.innerHeight;
-      };
-
-      resizeCanvas();
-      window.addEventListener("resize", resizeCanvas);
+      setHandlers(context);
 
       const render = () => {
         draw(context);

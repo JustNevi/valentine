@@ -3,10 +3,12 @@ import { ChargedParticle } from "./Matter/ChargedParticle";
 import { Body } from "./Matter/Body";
 import Electric from "./Force/Electric";
 import Gravity from "./Force/Gravity";
+import Magnetic from "./Force/Magnetic";
 
 export interface Engine {
   start: () => void;
   run: () => void;
+  onClickHandler: (event: MouseEvent) => void;
 }
 
 interface Props {
@@ -41,15 +43,19 @@ function Engine({ endCalculate }: Props): Engine {
     }));
   };
 
+  const onClickHandler = (event: MouseEvent) => {
+    static_particles[0].x = event.clientX;
+    static_particles[0].y = event.clientY;
+  };
+
   const start = () => {
     static_particles = [
-      { x: 200, y: 300, vel_x: 0, vel_y: 0, acc_x: 0, acc_y: 0 },
-      { x: 300, y: 200, vel_x: 0, vel_y: 0, acc_x: 0, acc_y: 0 },
-      { x: 1000, y: 400, vel_x: 0, vel_y: 0, acc_x: 0, acc_y: 0 },
-      { x: 500, y: 100, vel_x: 0, vel_y: 0, acc_x: 0, acc_y: 0 },
-      { x: 600, y: 300, vel_x: 0, vel_y: 0, acc_x: 0, acc_y: 0 },
+      // { x: 200, y: 300, vel_x: 0, vel_y: 0, acc_x: 0, acc_y: 0 },
+      // { x: 300, y: 200, vel_x: 0, vel_y: 0, acc_x: 0, acc_y: 0 },
+      // { x: 1000, y: 400, vel_x: 0, vel_y: 0, acc_x: 0, acc_y: 0 },
+      // { x: 500, y: 100, vel_x: 0, vel_y: 0, acc_x: 0, acc_y: 0 },
+      // { x: 600, y: 300, vel_x: 0, vel_y: 0, acc_x: 0, acc_y: 0 },
       { x: 800, y: 400, vel_x: 0, vel_y: 0, acc_x: 0, acc_y: 0 },
-      { x: 400, y: 400, vel_x: 0, vel_y: 0, acc_x: 0, acc_y: 0 },
     ];
 
     particles = [
@@ -94,9 +100,14 @@ function Engine({ endCalculate }: Props): Engine {
     //   particles: particles.map((p) => particleToChargedParticle(p)),
     // });
 
-    particles = Gravity({
-      static_bodies: static_particles.map((p) => particleToBody(p)),
-      bodies: particles.map((p) => particleToBody(p)),
+    // particles = Gravity({
+    //   static_bodies: static_particles.map((p) => particleToBody(p)),
+    //   bodies: particles.map((p) => particleToBody(p)),
+    // });
+
+    particles = Magnetic({
+      static_particle: particleToChargedParticle(static_particles[0], -2),
+      particles: particles.map((p) => particleToChargedParticle(p)),
     });
 
     moveParticles();
@@ -104,7 +115,7 @@ function Engine({ endCalculate }: Props): Engine {
     endCalculate(particles, static_particles);
   };
 
-  return { start, run };
+  return { start, run, onClickHandler };
 }
 
 export default Engine;
