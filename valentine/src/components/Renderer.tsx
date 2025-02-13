@@ -1,5 +1,5 @@
 import Engine from "./Physics/Engine";
-import { Particle } from "./Physics/Matter/Particle";
+import { Particle, initParticle } from "./Physics/Matter/Particle";
 
 import { Shape } from "./Shapes/Basic/Shape";
 import Circle from "./Shapes/Basic/Circle";
@@ -10,6 +10,9 @@ import ShapesDrawer from "./Shapes/ShapesDrawer";
 export interface Renderer {
   draw: (context: CanvasRenderingContext2D) => void;
   onClickHandler: (event: MouseEvent) => void;
+  onMouseMoveHandler: (event: MouseEvent) => void;
+  onMouseDownHandler: (event: MouseEvent) => void;
+  onMouseUpHandler: (event: MouseEvent) => void;
 }
 
 function Renderer(): Renderer {
@@ -22,11 +25,12 @@ function Renderer(): Renderer {
 
   const particlesToCircles = (
     particles: Particle[],
-    color: string = "red"
+    color: string = "red",
+    r: number = 5
   ): Shape[] => {
     const shps: Shape[] = particles.map((p) =>
       Circle({
-        circle: { x: p.x, y: p.y, r: 5, color: color },
+        circle: { x: p.x, y: p.y, r: r, color: color },
       })
     );
 
@@ -35,9 +39,20 @@ function Renderer(): Renderer {
 
   const handleEndCalculate = (
     particles: Particle[],
-    help_particles?: Particle[]
+    help_particles?: Particle[],
+    mouse_pos?: { x: number; y: number; r: number }
   ) => {
-    shapes = particlesToCircles(particles);
+    shapes = [];
+
+    if (mouse_pos) {
+      let p = initParticle;
+      p.x = mouse_pos.x;
+      p.y = mouse_pos.y;
+      shapes = shapes.concat(particlesToCircles([p], "green", mouse_pos.r));
+    }
+
+    shapes = shapes.concat(particlesToCircles(particles));
+
     if (help_particles) {
       shapes = shapes.concat(particlesToCircles(help_particles, "blue"));
     }
@@ -53,8 +68,17 @@ function Renderer(): Renderer {
   };
 
   const onClickHandler = engine.onClickHandler;
+  const onMouseMoveHandler = engine.onMouseMoveHandler;
+  const onMouseDownHandler = engine.onMouseDownHandler;
+  const onMouseUpHandler = engine.onMouseUpHandler;
 
-  return { draw, onClickHandler };
+  return {
+    draw,
+    onClickHandler,
+    onMouseMoveHandler,
+    onMouseDownHandler,
+    onMouseUpHandler,
+  };
 }
 
 export default Renderer;

@@ -33,16 +33,17 @@ function Magnetic({
     let vel_x = calc_vel(mp.x, sp.x, mp.q, sp.q, r);
     let vel_y = calc_vel(mp.y, sp.y, mp.q, sp.q, r);
 
-    // If the particle is within the freeze radius, stop movement
-    const vel_magnitude = Math.sqrt(vel_x ** 2 + vel_y ** 2);
-    if (vel_magnitude > r) {
-      moved_particles[id].vel_x = 0;
-      moved_particles[id].vel_y = 0;
-      moved_particles[id].x = sp.x;
-      moved_particles[id].y = sp.y;
-    } else {
-      moved_particles[id].vel_x = vel_x;
-      moved_particles[id].vel_y = vel_y;
+    if (vel_x && vel_y) {
+      const vel_magnitude = Math.sqrt(vel_x ** 2 + vel_y ** 2);
+      if (vel_magnitude > r) {
+        moved_particles[id].vel_x = 0;
+        moved_particles[id].vel_y = 0;
+        moved_particles[id].x = sp.x;
+        moved_particles[id].y = sp.y;
+      } else {
+        moved_particles[id].vel_x = vel_x;
+        moved_particles[id].vel_y = vel_y;
+      }
     }
   });
 

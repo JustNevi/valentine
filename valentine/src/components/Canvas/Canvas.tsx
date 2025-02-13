@@ -3,10 +3,19 @@ import useCanvas from "./useCanvas";
 interface Props {
   draw: (context: CanvasRenderingContext2D) => void;
   onClick?: (event: MouseEvent) => void;
+  onMouseMove?: (event: MouseEvent) => void;
+  onMouseDown?: (event: MouseEvent) => void;
+  onMouseUp?: (event: MouseEvent) => void;
 }
 
-function Canvas({ draw, onClick }: Props) {
-  const canvasRef = useCanvas({ draw, onClick });
+function Canvas({ draw, onClick, onMouseMove, onMouseDown, onMouseUp }: Props) {
+  const canvasRef = useCanvas({
+    draw,
+    onClick,
+    onMouseMove,
+    onMouseDown,
+    onMouseUp,
+  });
 
   return (
     <canvas
