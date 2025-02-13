@@ -9,7 +9,7 @@ interface Props {
 function Electric({
   static_particles,
   particles,
-  k = -2,
+  k = -0.15,
 }: Props): ChargedParticle[] {
   const moved_particles: ChargedParticle[] = [...particles];
 

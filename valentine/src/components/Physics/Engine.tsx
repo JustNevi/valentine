@@ -1,9 +1,10 @@
 import { Particle, initParticle } from "./Matter/Particle";
 import { ChargedParticle } from "./Matter/ChargedParticle";
 // import { Body } from "./Matter/Body";
-// import Electric from "./Force/Electric";
+
 // import Gravity from "./Force/Gravity";
 //import Magnetic from "./Force/Magnetic";
+import Electric from "./Force/Electric";
 import Repulsion from "./Force/Repulsion";
 
 export interface Engine {
@@ -24,8 +25,10 @@ interface Props {
 }
 
 function Engine({ endCalculate }: Props): Engine {
-  let static_particles: Particle[][];
-  let particles: Particle[][];
+  let static_particles_photons: Particle[][];
+  let particles_photons: Particle[][];
+  let static_particles_heart: Particle[][];
+  let particles_heart: Particle[][];
 
   let mouse_x: number = 0;
   let mouse_y: number = 0;
@@ -47,8 +50,8 @@ function Engine({ endCalculate }: Props): Engine {
     return array_particles;
   };
 
-  const moveParticles = () => {
-    particles = particles.map((arr) =>
+  const moveParticles = (particles: Particle[][]): Particle[][] => {
+    return particles.map((arr) =>
       arr.map((p) => ({
         x: p.x + p.vel_x,
         y: p.y + p.vel_y,
@@ -60,10 +63,7 @@ function Engine({ endCalculate }: Props): Engine {
     );
   };
 
-  const onClickHandler = (event: MouseEvent) => {
-    static_particles[0][0].x = event.clientX;
-    static_particles[0][0].y = event.clientY;
-  };
+  const onClickHandler = (_event: MouseEvent) => {};
   const onMouseMoveHandler = (event: MouseEvent) => {
     mouse_x = event.clientX;
     mouse_y = event.clientY;
@@ -71,8 +71,8 @@ function Engine({ endCalculate }: Props): Engine {
   const onMouseDownHandler = (_event: MouseEvent) => {};
   const onMouseUpHandler = (_event: MouseEvent) => {};
 
-  const getPushedAroundStaticParticles = (): Particle[][] => {
-    return static_particles.map((arr) =>
+  const getPushedAroundStaticParticlesHeart = (): Particle[][] => {
+    return static_particles_heart.map((arr) =>
       arr.map((p) => {
         const pushed_particle = { ...p };
         if ((p.x - mouse_x) ** 2 + (p.y - mouse_y) ** 2 <= circleRadius ** 2) {
@@ -101,9 +101,9 @@ function Engine({ endCalculate }: Props): Engine {
     );
   };
 
-  const start = () => {
-    static_particles = [];
-    particles = [];
+  const initHeartParticles = () => {
+    static_particles_heart = [];
+    particles_heart = [];
 
     for (let x = 0; x < window.innerWidth; x += 10) {
       for (let y = 0; y < window.innerWidth; y += 10) {
@@ -120,16 +120,48 @@ function Engine({ endCalculate }: Props): Engine {
           const par = { ...initParticle };
           par.x = X;
           par.y = Y;
-          static_particles.push([par]);
+          static_particles_heart.push([par]);
         }
       }
     }
 
-    for (let i = 0; i < static_particles.length; i++) {
-      particles.push([initParticle]);
+    for (let i = 0; i < static_particles_heart.length; i++) {
+      particles_heart.push([initParticle]);
     }
 
-    particles = particles.map((arr) =>
+    particles_heart = particles_heart.map((arr) =>
+      arr.map((p) => ({
+        x: getRandomInt(window.innerWidth),
+        y: getRandomInt(window.innerHeight),
+        vel_x: p.vel_x,
+        vel_y: p.vel_y,
+        acc_x: p.acc_x,
+        acc_y: p.acc_y,
+      }))
+    );
+  };
+
+  const initPhotonParticles = () => {
+    static_particles_photons = [];
+    particles_photons = [];
+
+    let static_particles_photons_arr: Particle[] = [];
+    let particles_photons_arr: Particle[] = [];
+
+    const size = 100;
+
+    for (let i = 0; i < size; i++) {
+      static_particles_photons_arr.push(initParticle);
+    }
+
+    for (let i = 0; i < size; i++) {
+      particles_photons_arr.push(initParticle);
+    }
+
+    static_particles_photons.push(static_particles_photons_arr);
+    particles_photons.push(particles_photons_arr);
+
+    static_particles_photons = static_particles_photons.map((arr) =>
       arr.map((p) => ({
         x: getRandomInt(window.innerWidth),
         y: getRandomInt(window.innerHeight),
@@ -140,47 +172,87 @@ function Engine({ endCalculate }: Props): Engine {
       }))
     );
 
-    endCalculate(
-      particlesToArray(particles),
-      particlesToArray(static_particles)
+    particles_photons = particles_photons.map((arr) =>
+      arr.map((p) => ({
+        x: getRandomInt(window.innerWidth),
+        y: getRandomInt(window.innerHeight),
+        vel_x: p.vel_x,
+        vel_y: p.vel_y,
+        acc_x: p.acc_x,
+        acc_y: p.acc_y,
+      }))
     );
   };
 
-  const run = () => {
-    const pushed_static_particles = getPushedAroundStaticParticles();
+  const start = () => {
+    initHeartParticles();
+    initPhotonParticles();
 
-    // particles = Electric({
-    //   static_particles: pushed_static_particles.map((p) =>
-    //     particleToChargedParticle(p, -2)
-    //   ),
-    //   particles: particles.map((p) => particleToChargedParticle(p)),
-    // });
+    endCalculate(
+      particlesToArray(particles_heart),
+      particlesToArray(static_particles_heart)
+    );
+  };
 
-    let new_particles: Particle[][] = new Array(particles.length)
+  const processHeart = () => {
+    const pushed_static_particles = getPushedAroundStaticParticlesHeart();
+
+    let moved_particles: Particle[][] = new Array(particles_heart.length)
       .fill(null)
       .map(() => []);
 
     for (let i = 0; i < pushed_static_particles.length; i++) {
       let static_array = pushed_static_particles[i];
-      let movable_array = particles[i];
+      let movable_array = particles_heart[i];
 
       movable_array = Repulsion({
         static_particle: particleToChargedParticle(static_array[0], -2),
         particles: movable_array.map((p) => particleToChargedParticle(p)),
       });
 
-      new_particles[i] = movable_array;
+      moved_particles[i] = movable_array;
     }
 
-    particles = new_particles;
+    particles_heart = moveParticles(moved_particles);
+  };
 
-    moveParticles();
+  const processPhotons = () => {
+    let moved_particles: Particle[][] = new Array(particles_photons.length)
+      .fill(null)
+      .map(() => []);
 
-    endCalculate(particlesToArray(particles), [], {
-      x: mouse_x,
-      y: mouse_y,
-      r: circleRadius,
-    });
+    for (let i = 0; i < static_particles_photons.length; i++) {
+      let static_array = static_particles_photons[i];
+      let movable_array = particles_photons[i];
+
+      movable_array = Electric({
+        static_particles: static_array.map((p) =>
+          particleToChargedParticle(p, -2)
+        ),
+        particles: movable_array.map((p) => particleToChargedParticle(p)),
+      });
+
+      moved_particles[i] = movable_array;
+    }
+
+    particles_photons = moveParticles(moved_particles);
+  };
+
+  const run = () => {
+    processHeart();
+    processPhotons();
+
+    endCalculate(
+      particlesToArray(particles_heart).concat(
+        particlesToArray(particles_photons)
+      ),
+      [],
+      {
+        x: mouse_x,
+        y: mouse_y,
+        r: circleRadius,
+      }
+    );
   };
 
   return {
