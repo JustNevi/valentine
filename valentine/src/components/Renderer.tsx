@@ -1,5 +1,5 @@
 import Engine from "./Physics/Engine";
-import { Particle, initParticle } from "./Physics/Matter/Particle";
+import { Particle } from "./Physics/Matter/Particle";
 
 import { Shape } from "./Shapes/Shape";
 import Circle from "./Shapes/Basic/Circle";
@@ -24,20 +24,6 @@ function Renderer(): Renderer {
     Rectangle({ rectangle: { x: 50, y: 50, w: 20, h: 40, color: "blue" } }),
   ];
   let shapesDrawer = ShapesDrawer({ shapes: shapes });
-
-  const particlesToCircles = (
-    particles: Particle[],
-    color: string = "red",
-    r: number = 5
-  ): Shape[] => {
-    const shps: Shape[] = particles.map((p) =>
-      Circle({
-        circle: { x: p.x, y: p.y, r: r, color: color },
-      })
-    );
-
-    return shps;
-  };
 
   const particlesToHeart = (
     particles: Particle[],
