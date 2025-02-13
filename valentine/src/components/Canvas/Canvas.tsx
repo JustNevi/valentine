@@ -7,7 +7,21 @@ interface Props {
 function Canvas({ draw }: Props) {
   const canvasRef = useCanvas({ draw });
 
-  return <canvas ref={canvasRef} width={"800px"} height={"500px"} />;
+  return (
+    <canvas
+      ref={canvasRef}
+      width={window.window.innerWidth}
+      height={window.window.innerHeight}
+      style={{
+        display: "block",
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100vw",
+        height: "100vh",
+      }}
+    />
+  );
 }
 
 export default Canvas;

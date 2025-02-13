@@ -20,6 +20,14 @@ function useCanvas({ draw }: Props) {
     let animationFrameId = 0;
 
     if (context) {
+      const resizeCanvas = () => {
+        context.canvas.width = window.innerWidth;
+        context.canvas.height = window.innerHeight;
+      };
+
+      resizeCanvas();
+      window.addEventListener("resize", resizeCanvas);
+
       const render = () => {
         draw(context);
         animationFrameId = window.requestAnimationFrame(render);
