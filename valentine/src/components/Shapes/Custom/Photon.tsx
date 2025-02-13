@@ -1,16 +1,16 @@
 import { ShapeProps, Shape } from "../Shape";
 
-export interface CircleProps extends ShapeProps {
+export interface PhotonProps extends ShapeProps {
   r: number;
 }
 
 interface Props {
-  circle: CircleProps;
+  photon: PhotonProps;
 }
 
-function Circle({ circle }: Props): Shape {
+function Photon({ photon }: Props): Shape {
   const draw = (context: CanvasRenderingContext2D) => {
-    const { x, y, r, color } = circle;
+    const { x, y, r, color } = photon;
 
     context.beginPath();
     context.arc(x, y, r, 0, Math.PI * 2);
@@ -22,4 +22,4 @@ function Circle({ circle }: Props): Shape {
   return { draw };
 }
 
-export default Circle;
+export default Photon;

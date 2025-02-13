@@ -18,7 +18,8 @@ export interface Engine {
 
 interface Props {
   endCalculate: (
-    particles: Particle[],
+    particles_heart: Particle[],
+    particles_photons: Particle[],
     help_particles?: Particle[],
     mouse_pos?: { x: number; y: number; r: number }
   ) => void;
@@ -44,9 +45,22 @@ function Engine({ endCalculate }: Props): Engine {
     return { q: q, ...particle };
   };
 
-  const particlesToArray = (particles: Particle[][]): Particle[] => {
+  const particlesToArray = (
+    particles: Particle[][],
+    filter: boolean = false
+  ): Particle[] => {
     const array_particles: Particle[] = [];
-    particles.forEach((arr) => arr.forEach((p) => array_particles.push(p)));
+    particles.forEach((arr) =>
+      arr.forEach((p) => {
+        if (filter) {
+          if (!isPointInHeart(p.x, p.y)) {
+            array_particles.push(p);
+          }
+        } else {
+          array_particles.push(p);
+        }
+      })
+    );
     return array_particles;
   };
 
@@ -92,9 +106,12 @@ function Engine({ endCalculate }: Props): Engine {
   };
 
   const isPointInHeart = (x: number, y: number): boolean => {
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2 + 50;
+
     const heartSize = 200;
-    const X = x / -heartSize;
-    const Y = y / -heartSize;
+    const X = (x - centerX) / -heartSize;
+    const Y = (y - centerY) / -heartSize;
     return (
       (Math.pow(X, 2) + Math.pow(Y, 2) - 1) ** 3 <=
       2 * Math.pow(X, 2) * Math.pow(Y, 3)
@@ -107,16 +124,13 @@ function Engine({ endCalculate }: Props): Engine {
 
     for (let x = 0; x < window.innerWidth; x += 10) {
       for (let y = 0; y < window.innerWidth; y += 10) {
-        const centerX = window.innerWidth / 2;
-        const centerY = window.innerHeight / 2 + 50;
-
         const randomX = getRandomInt(10);
         const randomY = getRandomInt(10);
 
         const X = x - randomX;
         const Y = y - randomY;
 
-        if (isPointInHeart(X - centerX, Y - centerY)) {
+        if (isPointInHeart(X, Y)) {
           const par = { ...initParticle };
           par.x = X;
           par.y = Y;
@@ -243,9 +257,8 @@ function Engine({ endCalculate }: Props): Engine {
     processPhotons();
 
     endCalculate(
-      particlesToArray(particles_heart).concat(
-        particlesToArray(particles_photons)
-      ),
+      particlesToArray(particles_heart),
+      particlesToArray(particles_photons, true),
       [],
       {
         x: mouse_x,

@@ -1,4 +1,4 @@
-import { ShapeProps, Shape } from "./Shape";
+import { ShapeProps, Shape } from "../Shape";
 
 export interface RectangleProps extends ShapeProps {
   w: number;
@@ -11,8 +11,10 @@ interface Props {
 
 function Rectangle({ rectangle }: Props): Shape {
   const draw = (context: CanvasRenderingContext2D) => {
-    context.fillStyle = rectangle.color;
-    context.fillRect(rectangle.x, rectangle.y, rectangle.w, rectangle.h);
+    const { x, y, w, h, color } = rectangle;
+
+    context.fillStyle = color;
+    context.fillRect(x, y, w, h);
   };
 
   return { draw };

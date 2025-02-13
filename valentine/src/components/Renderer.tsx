@@ -1,9 +1,11 @@
 import Engine from "./Physics/Engine";
 import { Particle, initParticle } from "./Physics/Matter/Particle";
 
-import { Shape } from "./Shapes/Basic/Shape";
+import { Shape } from "./Shapes/Shape";
 import Circle from "./Shapes/Basic/Circle";
 import Rectangle from "./Shapes/Basic/Rectangle";
+import Heart from "./Shapes/Custom/Heart";
+import Photon from "./Shapes/Custom/Photon";
 
 import ShapesDrawer from "./Shapes/ShapesDrawer";
 
@@ -37,25 +39,42 @@ function Renderer(): Renderer {
     return shps;
   };
 
-  const handleEndCalculate = (
+  const particlesToHeart = (
     particles: Particle[],
-    help_particles?: Particle[],
-    mouse_pos?: { x: number; y: number; r: number }
+    color: string = "red",
+    size: number = 5
+  ): Shape[] => {
+    const shps: Shape[] = particles.map((p) =>
+      Heart({
+        heart: { x: p.x, y: p.y, size: size, color: color },
+      })
+    );
+
+    return shps;
+  };
+
+  const particlesToPhoton = (
+    particles: Particle[],
+    color: string = "red",
+    r: number = 5
+  ): Shape[] => {
+    const shps: Shape[] = particles.map((p) =>
+      Photon({
+        photon: { x: p.x, y: p.y, r: r, color: color },
+      })
+    );
+
+    return shps;
+  };
+
+  const handleEndCalculate = (
+    particles_heart: Particle[],
+    particles_photons: Particle[]
   ) => {
     shapes = [];
 
-    if (mouse_pos) {
-      let p = initParticle;
-      p.x = mouse_pos.x;
-      p.y = mouse_pos.y;
-      shapes = shapes.concat(particlesToCircles([p], "green", mouse_pos.r));
-    }
-
-    shapes = shapes.concat(particlesToCircles(particles));
-
-    if (help_particles) {
-      shapes = shapes.concat(particlesToCircles(help_particles, "blue", 1));
-    }
+    shapes = shapes.concat(particlesToPhoton(particles_photons, "white", 2));
+    shapes = shapes.concat(particlesToHeart(particles_heart, "red", 10));
   };
 
   const engine = Engine({ endCalculate: handleEndCalculate });

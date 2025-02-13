@@ -20,8 +20,6 @@ function Canvas({ draw, onClick, onMouseMove, onMouseDown, onMouseUp }: Props) {
   return (
     <canvas
       ref={canvasRef}
-      width={window.window.innerWidth}
-      height={window.window.innerHeight}
       style={{
         display: "block",
         position: "fixed",

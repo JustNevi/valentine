@@ -1,4 +1,4 @@
-import { Shape } from "./Basic/Shape";
+import { Shape } from "./Shape";
 
 export interface ShapesDrawer {
   draw: (context: CanvasRenderingContext2D, refresh?: boolean) => void;
@@ -11,8 +11,10 @@ interface Props {
 function ShapesDrawer({ shapes }: Props): ShapesDrawer {
   const draw = (context: CanvasRenderingContext2D, refresh = true) => {
     if (refresh) {
-      context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+      context.fillStyle = "Black"; // Set the fill color to black
+      context.fillRect(0, 0, context.canvas.width, context.canvas.height);
     }
+
     shapes.forEach((shape) => shape.draw(context));
   };
 

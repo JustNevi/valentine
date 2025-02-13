@@ -44,6 +44,11 @@ function Repulsion({
         moved_particles[id].vel_x = vel_x;
         moved_particles[id].vel_y = vel_y;
       }
+    } else {
+      moved_particles[id].vel_x = 0;
+      moved_particles[id].vel_y = 0;
+      moved_particles[id].x = sp.x;
+      moved_particles[id].y = sp.y;
     }
   });
 
