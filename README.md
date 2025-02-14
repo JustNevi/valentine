@@ -1,3 +1,3 @@
-<div align="center">
-[❤](https://JustNevi.github.io/valentine)
-</div>
+<p align="center">
+  <a href="https://JustNevi.github.io/valentine">❤</a>
+</p>
